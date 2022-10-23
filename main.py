@@ -1,5 +1,10 @@
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
 from bs4 import BeautifulSoup
 import requests
+import time
 import os
 import re
 
@@ -11,6 +16,8 @@ CACHE_CONTROL = os.environ["CACHE_CONTROL"]
 UPGRADE_INSECURE_REQUESTS = os.environ["UPGRADE_INSECURE_REQUESTS"]
 USER_AGENT = os.environ["USER_AGENT"]
 URL = os.environ["URL"]
+GOOGLE_FORM = os.environ["GOOGLE_FORM"]
+DRIVER_PATH = os.environ["DRIVER_PATH"]
 
 # Define requests
 headers = {
@@ -49,3 +56,17 @@ address_data_list = soup.select(
 for address_data in address_data_list:
     address = address_data.text
     address_list.append(address)
+
+# Define selenium
+chrome_service = Service(executable_path=DRIVER_PATH)
+driver = webdriver.Chrome(service=chrome_service)
+driver.get(GOOGLE_FORM)
+time.sleep(3)
+
+for address, price, link in zip(address_list, price_list, link_list):
+    question_list = driver.find_elements(By.CSS_SELECTOR, "div.geS5n input")
+    data_list = [address, price, link]
+    for index, question in enumerate(question_list):
+        question.send_keys(data_list[index], Keys.TAB)
+        time.sleep(5)
+
