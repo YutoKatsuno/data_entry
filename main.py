@@ -60,13 +60,19 @@ for address_data in address_data_list:
 # Define selenium
 chrome_service = Service(executable_path=DRIVER_PATH)
 driver = webdriver.Chrome(service=chrome_service)
-driver.get(GOOGLE_FORM)
-time.sleep(3)
 
+# Fill out the form
 for address, price, link in zip(address_list, price_list, link_list):
-    question_list = driver.find_elements(By.CSS_SELECTOR, "div.geS5n input")
     data_list = [address, price, link]
+    driver.get(GOOGLE_FORM)
+    time.sleep(3)
+    question_list = driver.find_elements(By.CSS_SELECTOR, "div.geS5n input")
     for index, question in enumerate(question_list):
         question.send_keys(data_list[index], Keys.TAB)
         time.sleep(5)
+
+    # Send the data
+    time.sleep(5)
+    send_button = driver.find_element(By.XPATH, '//*[@id="mG61Hd"]/div[2]/div/div[3]/div[1]/div[1]/div')
+    send_button.click()
 
